@@ -1,0 +1,10 @@
+Input/
+Output/
+Config/
+utilities/input_compilation/data
+
+.Rproj.user
+*.Rproj
+*.RData
+.Rhistory
+*.ini
