@@ -1,3 +1,3 @@
-gasm1
+Marrey
 
-Creating a new repo in which to prepare marine input and handle output for the marine environment in gasm.
+Repo for the running of GaSM using marine data.
