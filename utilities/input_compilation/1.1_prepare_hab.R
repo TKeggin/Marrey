@@ -252,7 +252,7 @@ for(d in depthNames){                           # import all the data files and 
   depth <- resample(depth, depthTemplate, method = "bilinear") # how does this resampling affect the accuracy of the data? # check before and after reef zones
   depth <- aggregate(depth, fact=resolution)                   # set the resolution to target resolution
   geoDepthListRaw <- c(geoDepthListRaw,depth)
-  print(paste(era, d))
+  print(d)
 }
 
 #rm(depth, depthExt, depthTemplate)
