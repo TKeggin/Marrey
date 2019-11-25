@@ -12,7 +12,7 @@ library("readxl")
 
 # set variables
 
-resolution <- 6
+resolution <- 1
 
 # create blank rasters to aggregate/resample into
 resTemplate            <- raster(nrow=180/resolution, ncol=360/resolution, crs=NA)
@@ -105,7 +105,7 @@ timeInterval <- elevationTimes$age[length(elevationTimes$age)] - elevationTimes$
 geoTimes     <- seq(0, geoPeriod, timeInterval)   # sequence of times in ka from present
 geoTimesteps <- seq(1,length(geoTimes))           # serial id for timesteps
 
-koeppenTimes <- seq(0,200000,5000)          # sequence of times in ka from present
+koeppenTimes <- seq(0,200,5)          # sequence of times in ka from present
 
 deltaTemp <- deltaTemp.df$`Temp Delta`      # vector of delta temp data
 deltaBins <- .bincode(geoTimes, koeppenTimes, right = TRUE, include.lowest = TRUE) # assign geo timesteps into delta bins
