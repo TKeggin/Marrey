@@ -48,13 +48,6 @@ for (i in t_start:t_end){
   crs(raster_i) <- "+proj=longlat +datum=WGS84"
   age      <- geoTimes[i]
   
-  #plot
-  jpeg(file.path(OutputDir, "plot", paste0(round(age, digits = 2),".jpg") ), width = 680, height = 480)
-  par(mar=c(0,0,0.2,0.5)+0.2, oma=c(0,0,0,0))
-  plot(raster_i, legend.width=1,  legend.shrink=0.64, axes=FALSE, box=FALSE, xlab="", ylab="")
-  title(paste("GaSM world @", round(age, digits = 2)), line=-2.5, cex.main=3)
-  dev.off()
-  
   conductObj                     <- raster_i      # this is setting up the conductance (cost of dispersal) values for each cell in the raster
   conductObj[!is.na(conductObj)] <- 1             # this gives habitable cells a cost for crossing (1 = no change in cost)
   conductObj[is.na(conductObj)]  <- crossing_NA   # this gives the NA valued cells a cost for crossing (land)
@@ -80,6 +73,13 @@ for (i in t_start:t_end){
   values(geoDepthList[[i]])[values(geoDepthList[[i]]) <= depth_cut] <- NA
   # temp
   geoTempList[[1]][is.na(geoDepthList[[i]][])] <- NA
+  
+  # plot
+  jpeg(file.path(OutputDir, "plot", paste0(round(age, digits = 2),".jpg") ), width = 680, height = 480)
+  par(mar=c(0,0,0.2,0.5)+0.2, oma=c(0,0,0,0))
+  plot(geoDepthList[[i]], legend.width=1,  legend.shrink=0.64, axes=FALSE, box=FALSE, xlab="", ylab="")
+  title(paste("GaSM world @", round(age, digits = 2)), line=-2.5, cex.main=3)
+  dev.off()
   
   cat("Done with", age, "\n")
   
