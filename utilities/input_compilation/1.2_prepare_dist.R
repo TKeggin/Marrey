@@ -49,10 +49,10 @@ for (i in t_start:t_end){
   age      <- geoTimes[i]
   
   #plot
-  jpeg(file.path(OutputDir, "plot", paste0(age,".jpg") ), width = 680, height = 480)
+  jpeg(file.path(OutputDir, "plot", paste0(round(age, digits = 2),".jpg") ), width = 680, height = 480)
   par(mar=c(0,0,0.2,0.5)+0.2, oma=c(0,0,0,0))
   plot(raster_i, legend.width=1,  legend.shrink=0.64, axes=FALSE, box=FALSE, xlab="", ylab="")
-  title(paste("GaSM world @", age), line=-2.5, cex.main=3)
+  title(paste("GaSM world @", round(age, digits = 2)), line=-2.5, cex.main=3)
   dev.off()
   
   conductObj                     <- raster_i      # this is setting up the conductance (cost of dispersal) values for each cell in the raster
@@ -62,7 +62,7 @@ for (i in t_start:t_end){
   # create a transition object (based on conductance)
   transObj <- transition(conductObj, transitionFunction=min, directions=8) # create matrix with least cost value between each pair of cells (symmetrical?)
   transObj <- geoCorrection(transObj, type = "r", scl = T)         # correct for map distortion
-  #go around the world
+  # filter by out cells by depth cut off
   df_i            <- as.data.frame(raster_i, xy=TRUE, na.rm = TRUE) # this will remove NA cells
   colnames(df_i)  <- c("x","y","depth")
   df_i_habitable  <- filter(df_i, depth > depth_cut)[, 1:2]
@@ -74,6 +74,12 @@ for (i in t_start:t_end){
                                 mat_i_habitable)
   
   save(geo_dist_m_ti,file=file.path(OutputDir,"geo_dist_m", "geo_dist_m_ti" , paste0("geo_dist_m_ti_t_",i,".RData",sep="")) )
+  
+  # filter out all_geo_hab raster cells by the depth cut off
+  # depth
+  values(geoDepthList[[i]])[values(geoDepthList[[i]]) <= depth_cut] <- NA
+  # temp
+  geoTempList[[1]][is.na(geoDepthList[[i]][])] <- NA
   
   cat("Done with", age, "\n")
   
