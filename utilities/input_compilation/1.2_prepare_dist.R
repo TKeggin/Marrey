@@ -66,7 +66,7 @@ for (i in t_start:t_end){
                                 mat_i_habitable,
                                 mat_i_habitable)
   
-  save(geo_dist_m_ti,file=file.path(OutputDir,"geo_dist_m", "geo_dist_m_ti" , paste0("geo_dist_m_ti_t_",i,".RData",sep="")) )
+  save(geo_dist_m_ti,file=file.path(OutputDir,"geo_dist_m", "geo_dist_m_ti" , paste0("geo_dist_m_ti_t_",i-1,".RData",sep="")) )
   
   # filter out all_geo_hab raster cells by the depth cut off
   # depth
