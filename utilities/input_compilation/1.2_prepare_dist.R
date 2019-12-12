@@ -19,17 +19,15 @@ load("./temp.Rdata")
 
 # set variables ####
 
-OutputDir   <- paste0("../../Input/WorldMap200-0Ma_multiple_6d")
+OutputDir   <- paste0("../../Input/6d")
 crossing_NA <- 0     # Set to 0 (conductance) making land impassible. See gdistance package documentation.
 depth_cut   <- -1000 # set the depth cut-off
 
 # check, or create, output directories ####
 
 # create dirs if not existing
-if (!dir.exists(paste0(OutputDir,"/all_geo_hab"))){
-  dir.create(file.path(OutputDir, "all_geo_hab"))
-  dir.create(file.path(OutputDir, "geo_dist_m"))
-  dir.create(file.path(OutputDir, "geo_dist_m", "geo_dist_m_ti"))
+if (!dir.exists(paste0(OutputDir,"/distance_matrices"))){
+  dir.create(file.path(OutputDir, "distance_matrices"))
 }
 
 # create plot dir if not existing
@@ -66,13 +64,13 @@ for (i in t_start:t_end){
                                 mat_i_habitable,
                                 mat_i_habitable)
   
-  save(geo_dist_m_ti,file=file.path(OutputDir,"geo_dist_m", "geo_dist_m_ti" , paste0("geo_dist_m_ti_t_",i-1,".RData",sep="")) )
+  saveRDS(geo_dist_m_ti,file=file.path(OutputDir,"distance_matrices", paste0("geo_dist_m_ti_t_",i-1,".rds",sep="")) )
   
   # filter out all_geo_hab raster cells by the depth cut off
   # depth
   values(geoDepthList[[i]])[values(geoDepthList[[i]]) <= depth_cut] <- NA
   # temp
-  geoTempList[[1]][is.na(geoDepthList[[i]][])] <- NA
+  geoTempList[[i]][is.na(geoDepthList[[i]][])] <- NA
   
   # plot
   jpeg(file.path(OutputDir, "plot", paste0(round(age, digits = 2),".jpg") ), width = 680, height = 480)
@@ -119,7 +117,6 @@ masterTemp[is.na(masterDepth)] <- NA
 # create and save all_geo_hab object
 all_geo_hab <- list(temp = masterTemp, depth = masterDepth)
 
-save(all_geo_hab, file = file.path(OutputDir,"all_geo_hab", paste0("all_geo_hab.RData",sep="")))
-# saveRDS()
+saveRDS(all_geo_hab, file = file.path(OutputDir, paste0("all_geo_hab.rds",sep="")))
 
 

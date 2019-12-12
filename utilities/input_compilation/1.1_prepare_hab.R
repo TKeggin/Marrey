@@ -12,7 +12,7 @@ library("readxl")
 
 # set variables
 
-resolution <- 1
+resolution <- 6
 
 # create blank rasters to aggregate/resample into
 resTemplate            <- raster(nrow=180/resolution, ncol=360/resolution, crs=NA)
