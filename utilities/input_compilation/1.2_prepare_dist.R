@@ -25,12 +25,12 @@ depth_cut   <- -1000 # set the depth cut-off
 
 # check, or create, output directories ####
 
-# create dirs if not existing
+# create dirs if they don't exist
 if (!dir.exists(paste0(OutputDir,"/distance_matrices"))){
   dir.create(file.path(OutputDir, "distance_matrices"))
 }
 
-# create plot dir if not existing
+# create plot dir if it doesn't exist
 if (!file.exists(file.path(OutputDir, "/plot"))) {
   dir.create(file.path(OutputDir, "plot"))
 }
@@ -51,8 +51,8 @@ for (i in t_start:t_end){
   conductObj[is.na(conductObj)]  <- crossing_NA   # this gives the NA valued cells a cost for crossing (land)
   
   # create a transition object (based on conductance)
-  transObj <- transition(conductObj, transitionFunction=min, directions=8) # create matrix with least cost value between each pair of cells (symmetrical?)
-  transObj <- geoCorrection(transObj, type = "r", scl = T)         # correct for map distortion
+  transObj <- transition(conductObj, transitionFunction=min, directions=8) # create matrix with least cost values between each pair of cells (symmetrical?)
+  transObj <- geoCorrection(transObj, type = "r", scl = F) * 1000          # correct for map distortion. The output values are in m, the "*1000" converts to km
   # filter by out cells by depth cut off
   df_i            <- as.data.frame(raster_i, xy=TRUE, na.rm = TRUE) # this will remove NA cells
   colnames(df_i)  <- c("x","y","depth")
