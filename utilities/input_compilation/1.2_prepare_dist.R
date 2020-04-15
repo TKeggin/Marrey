@@ -26,8 +26,8 @@ depth_cut   <- -1000 # set the depth cut-off
 # check, or create, output directories ####
 
 # create dirs if they don't exist
-if (!dir.exists(paste0(OutputDir,"/distance_matrices"))){
-  dir.create(file.path(OutputDir, "distance_matrices"))
+if (!dir.exists(paste0(OutputDir,"/distances_full"))){
+  dir.create(file.path(OutputDir, "distances_full"))
 }
 
 # create plot dir if it doesn't exist
@@ -64,7 +64,12 @@ for (i in t_start:t_end){
                                 mat_i_habitable,
                                 mat_i_habitable)
   
-  saveRDS(geo_dist_m_ti,file=file.path(OutputDir,"distance_matrices", paste0("geo_dist_m_ti_t_",i-1,".rds",sep="")) )
+  # number rows and columns
+  rownames(geo_dist_m_ti) <- seq(1:dim(geo_dist_m_ti)[1])
+  colnames(geo_dist_m_ti) <- seq(1:dim(geo_dist_m_ti)[1])
+  
+  # save the distance matrix
+  saveRDS(geo_dist_m_ti,file=file.path(OutputDir,"distances_full", paste0("distances_full_",i-1,".rds",sep="")) )
   
   # filter out all_geo_hab raster cells by the depth cut off
   # depth
@@ -79,7 +84,7 @@ for (i in t_start:t_end){
   title(paste("GaSM world @", round(age, digits = 2)), line=-2.5, cex.main=3)
   dev.off()
   
-  cat("Done with", age, "\n")
+  cat("Done with", round(age, digits = 2), "\n")
   
 }
 
@@ -89,27 +94,27 @@ for (i in t_start:t_end){
 masterTemp <- as.data.frame(geoTempList[[1]], xy=T)
 masterTemp <- masterTemp[,-3]
 
-for(raster in rev(geoTempList)){
+for(raster in geoTempList){
   
   raster.df <- as.data.frame(raster, xy=T)
   masterTemp <- cbind(masterTemp,raster.df[,3])
   
 }
 
-colnames(masterTemp) <- c("x","y",rev(format(round(geoTimes, 2), nsmall = 2)))
+colnames(masterTemp) <- c("x","y",format(round(geoTimes, 2), nsmall = 2))
 
 # merge all depth rasters into a single dataframe
 masterDepth <- as.data.frame(geoDepthList[[1]], xy=T)
 masterDepth <- masterDepth[,-3]
 
-for(raster in rev(geoDepthList)){
+for(raster in geoDepthList){
   
   raster.df <- as.data.frame(raster, xy=T)
   masterDepth <- cbind(masterDepth,raster.df[,3])
   
 }
 
-colnames(masterDepth) <- c("x","y",rev(format(round(geoTimes, 2), nsmall = 2)))
+colnames(masterDepth) <- c("x","y",format(round(geoTimes, 2), nsmall = 2))
 
 # filter out terrestrial habitat from temperature
 masterTemp[is.na(masterDepth)] <- NA
@@ -117,6 +122,6 @@ masterTemp[is.na(masterDepth)] <- NA
 # create and save all_geo_hab object
 all_geo_hab <- list(temp = masterTemp, depth = masterDepth)
 
-saveRDS(all_geo_hab, file = file.path(OutputDir, paste0("all_geo_hab.rds",sep="")))
+saveRDS(all_geo_hab, file = file.path(OutputDir, paste0("landscapes.rds",sep="")))
 
 
