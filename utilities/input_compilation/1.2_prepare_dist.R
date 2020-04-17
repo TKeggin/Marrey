@@ -71,7 +71,7 @@ for (i in t_start:t_end){
   # save the distance matrix
   saveRDS(geo_dist_m_ti,file=file.path(OutputDir,"distances_full", paste0("distances_full_",i-1,".rds",sep="")) )
   
-  # filter out all_geo_hab raster cells by the depth cut off
+  # filter out landscapes raster cells by the depth cut off
   # depth
   values(geoDepthList[[i]])[values(geoDepthList[[i]]) <= depth_cut] <- NA
   # temp
@@ -88,7 +88,7 @@ for (i in t_start:t_end){
   
 }
 
-# create all_geo_hab ####
+# create landscapes ####
 
 # merge all temperature rasters into a single dataframe
 masterTemp <- as.data.frame(geoTempList[[1]], xy=T)
@@ -119,9 +119,9 @@ colnames(masterDepth) <- c("x","y",format(round(geoTimes, 2), nsmall = 2))
 # filter out terrestrial habitat from temperature
 masterTemp[is.na(masterDepth)] <- NA
 
-# create and save all_geo_hab object
-all_geo_hab <- list(temp = masterTemp, depth = masterDepth)
+# create and save landscapes object
+landscapes <- list(temp = masterTemp, depth = masterDepth)
 
-saveRDS(all_geo_hab, file = file.path(OutputDir, paste0("landscapes.rds",sep="")))
+saveRDS(landscapes, file = file.path(OutputDir, paste0("landscapes.rds",sep="")))
 
 
