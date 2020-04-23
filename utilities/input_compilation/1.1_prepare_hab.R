@@ -12,7 +12,7 @@ library("readxl")
 
 # set variables
 
-resolution <- 6
+resolution <- 1
 
 # create blank rasters to aggregate/resample into
 resTemplate            <- raster(nrow=180/resolution, ncol=360/resolution, crs=NA)
@@ -338,3 +338,4 @@ for(s in geoTimesteps){
 # want to keep geoTempList and geoDepthList
 
 save(geoTempList, geoDepthList, geoTimes, geoTimesteps, file = "./temp.Rdata")
+

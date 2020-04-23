@@ -21,7 +21,7 @@ load("./temp.Rdata")
 
 # set variables ####
 
-OutputDir   <- paste0("../../Input/6d")
+OutputDir   <- paste0("../../Input/1d")
 crossing_NA <- 0     # Set to 0 (conductance) making land impassible. See gdistance package documentation.
 depth_cut   <- -1000 # set the depth cut-off
 
