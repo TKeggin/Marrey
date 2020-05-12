@@ -21,9 +21,10 @@ load("./temp.Rdata")
 
 # set variables ####
 
-OutputDir   <- paste0("../../Input/1d")
+OutputDir   <- paste0("../../Input/6d_2000m_20c")
 crossing_NA <- 0     # Set to 0 (conductance) making land impassible. See gdistance package documentation.
 depth_cut   <- -1000 # set the depth cut-off
+temp_cut    <- 20    # set lower temperature limit cut-off
 
 # check, or create, output directories ####
 
@@ -39,13 +40,23 @@ if (!file.exists(file.path(OutputDir, "/plot"))) {
 
 # create landscapes ####
 
+# filter out uninhabitable cells by environmental cut offs
+
+cutTemp  <- stack(geoTempList)
+cutDepth <- stack(geoDepthList)
+
+cutDepth[cutDepth < depth_cut] <- NA
+cutTemp[cutTemp < temp_cut] <- NA
+cutTemp[is.na(cutDepth)] <- NA
+cutDepth[is.na(cutTemp)] <- NA
+
 # merge all temperature rasters into a single dataframe
-masterTemp <- as.data.frame(geoTempList[[1]], xy=T)
+masterTemp <- as.data.frame(cutTemp[[1]], xy=T)
 masterTemp <- masterTemp[,-3]
 
-for(raster in geoTempList){
+for(raster in seq(1,dim(cutTemp)[3])){
   
-  raster.df <- as.data.frame(raster, xy=T)
+  raster.df <- as.data.frame(cutTemp[[raster]], xy=T)
   masterTemp <- cbind(masterTemp,raster.df[,3])
   
 }
@@ -53,21 +64,17 @@ for(raster in geoTempList){
 colnames(masterTemp) <- c("x","y",format(round(geoTimes, 2), nsmall = 2))
 
 # merge all depth rasters into a single dataframe
-masterDepth <- as.data.frame(geoDepthList[[1]], xy=T)
+masterDepth <- as.data.frame(cutDepth[[1]], xy=T)
 masterDepth <- masterDepth[,-3]
 
-for(raster in geoDepthList){
+for(raster in seq(1,dim(cutDepth)[3])){
   
-  raster.df <- as.data.frame(raster, xy=T)
+  raster.df <- as.data.frame(cutDepth[[raster]], xy=T)
   masterDepth <- cbind(masterDepth,raster.df[,3])
   
 }
 
-colnames(masterDepth) <- c("x","y",format(round(geoTimes, 2), nsmall = 2))
-
-# filter out uninhabitable cells by depth cut off
-masterDepth[masterDepth < depth_cut] <- NA
-masterTemp[is.na(masterDepth)] <- NA
+colnames(masterTemp) <- c("x","y",format(round(geoTimes, 2), nsmall = 2))
 
 # explicitly assign rownames
 rownames(masterTemp)  <- 1:dim(masterTemp)[1]
@@ -89,18 +96,18 @@ for (i in t_start:t_end){
   crs(raster_i) <- "+proj=longlat +datum=WGS84"
   age      <- geoTimes[i]
   
-  conductObj                     <- raster_i      # this is setting up the conductance (cost of dispersal) values for each cell in the raster
+  conductObj                     <- raster_i      # this is setting up the conductance (cost of dispersal) values for all marine cells in the raster
   conductObj[!is.na(conductObj)] <- 1             # this gives habitable cells a cost for crossing (1 = no change in cost)
   conductObj[is.na(conductObj)]  <- crossing_NA   # this gives the NA valued cells a cost for crossing (land)
   
   # create a transition object (based on conductance)
   transObj <- transition(conductObj, transitionFunction=min, directions=8) # create matrix with least cost values between each pair of cells (symmetrical?)
   transObj <- geoCorrection(transObj, type = "r", scl = F) * 1000          # correct for map distortion. The output values are in m, the "*1000" converts to km
-  # filter by out cells by depth cut off
+  # filter by out cells by environmental cut offs
+  raster_i        <- mask(raster_i, cutDepth[[i]])                  # filter buy cut offs implemented in the landscapes step
   df_i            <- as.data.frame(raster_i, xy=TRUE, na.rm = TRUE) # this will remove NA cells
   colnames(df_i)  <- c("x","y","depth")
-  df_i_habitable  <- filter(df_i, depth >= depth_cut)[, 1:2]
-  mat_i_habitable <- data.matrix(df_i_habitable)
+  mat_i_habitable <- data.matrix(df_i)[, 1:2] # convert to matrix of habitable coordinates
   
   # calculate the least-cost distance between points using the transition object and target (habitable) cells
   dist_mat <- costDistance(transObj,
@@ -114,16 +121,10 @@ for (i in t_start:t_end){
   # save the distance matrix
   saveRDS(dist_mat,file=file.path(OutputDir,"distances_full", paste0("distances_full_",i-1,".rds",sep="")) )
   
-  # filter out landscapes raster cells by the depth cut off
-  # depth
-  values(geoDepthList[[i]])[values(geoDepthList[[i]]) < depth_cut] <- NA
-  # temp
-  geoTempList[[i]][is.na(geoDepthList[[i]][])] <- NA
-  
   # plot
   jpeg(file.path(OutputDir, "plot", paste0(round(age, digits = 2),".jpg") ), width = 680, height = 480)
   par(mar=c(0,0,0.2,0.5)+0.2, oma=c(0,0,0,0))
-  plot(geoDepthList[[i]], legend.width=1,  legend.shrink=0.64, axes=FALSE, box=FALSE, xlab="", ylab="")
+  plot(cutDepth[[i]], legend.width=1,  legend.shrink=0.64, axes=FALSE, box=FALSE, xlab="", ylab="")
   title(paste("GaSM world @", round(age, digits = 2)), line=-2.5, cex.main=3)
   dev.off()
   
