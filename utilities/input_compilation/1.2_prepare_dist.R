@@ -74,7 +74,7 @@ for(raster in seq(1,dim(cutDepth)[3])){
   
 }
 
-colnames(masterTemp) <- c("x","y",format(round(geoTimes, 2), nsmall = 2))
+colnames(masterDepth) <- c("x","y",format(round(geoTimes, 2), nsmall = 2))
 
 # explicitly assign rownames
 rownames(masterTemp)  <- 1:dim(masterTemp)[1]
