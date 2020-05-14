@@ -55,8 +55,8 @@ for(i in koeppenNames){                           # import all the data files an
 }
 
 # 02. TEMP replace koeppen band numbers with temperature values ####
-temp <- c(26,22,16,5,-10,-20)                            # data from v7
-bands <- c(1:6)                                          # Koeppen bands
+temp <- c(24,22,16,19,10,-10,-20)                        # data koeppen_temp.csv. where is this file from?
+bands <- c(1:7)                                          # Koeppen bands
 
 koeppenTimesteps <- c(1:length(koeppenList))             # make a sequence; 1 to the number of number files, to use in the nested for loop
 
@@ -89,7 +89,7 @@ for(k in koeppenTimesteps){
 
 # 04. TEMP create temperature raster for each geo time step ####
 
-deltaTemp.df <- read_excel("./data/Koeppen\ Zonal\ Temperaturesv7.xlsx", range = "A1:B42") # using v7 tropical delta temperature
+deltaTemp.df <- read_excel("./data/temp_koeppen_tk.xlsx", range = "A1:B42") # using temp_koeppen delta temperature
 
 # categorise geo timesteps into koeppen timestep bins
 
