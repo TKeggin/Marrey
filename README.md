@@ -1,3 +1,3 @@
 Marrey
 
-Repo for the running of GaSM using marine data.
+Repo for the running of Gen3sis using marine data.
