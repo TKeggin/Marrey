@@ -322,7 +322,7 @@ for(step in geoTimesteps){
 
 for(t in geoTimesteps){
   
-  geoDepthList[[t]] <- convert.grey.to.elev(geoDepthListRaw[[t]])
+  geoDepthList[[t]] <- convert.grey.to.elev(geoDepthList[[t]])
   
 }
 
