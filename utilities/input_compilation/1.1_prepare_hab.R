@@ -77,7 +77,7 @@ koeppenListSmooth <- koeppenList
 
 for(k in koeppenTimesteps){
   
-  koeppenListSmooth[[k]] <- focal(koeppenList[[k]], w = matrix(1,3,3),
+  koeppenListSmooth[[k]] <- focal(koeppenList[[k]], w = matrix(1,21,21),
                                   fun = mean,
                                   pad = TRUE, padValue = -15)  # add this to arbitrarily replace edge NAs - crop the image
   

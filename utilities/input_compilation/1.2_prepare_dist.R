@@ -21,10 +21,10 @@ load("./temp.Rdata")
 
 # set variables ####
 
-OutputDir   <- paste0("../../Input/6d_2000m_20c")
+OutputDir   <- paste0("D:/genesis/input/1d_all")
 crossing_NA <- 0     # Set to 0 (conductance) making land impassible. See gdistance package documentation.
-depth_cut   <- -1000 # set the depth cut-off
-temp_cut    <- 20    # set lower temperature limit cut-off
+depth_cut   <- NA    # set the depth cut-off
+temp_cut    <- NA    # set lower temperature limit cut-off
 
 # check, or create, output directories ####
 
@@ -120,13 +120,6 @@ for (i in t_start:t_end){
   
   # save the distance matrix
   saveRDS(dist_mat,file=file.path(OutputDir,"distances_full", paste0("distances_full_",i-1,".rds",sep="")) )
-  
-  # plot
-  jpeg(file.path(OutputDir, "plot", paste0(round(age, digits = 2),".jpg") ), width = 680, height = 480)
-  par(mar=c(0,0,0.2,0.5)+0.2, oma=c(0,0,0,0))
-  plot(cutDepth[[i]], legend.width=1,  legend.shrink=0.64, axes=FALSE, box=FALSE, xlab="", ylab="")
-  title(paste("GaSM world @", round(age, digits = 2)), line=-2.5, cex.main=3)
-  dev.off()
   
   cat("Done with", round(age, digits = 2), "\n")
   
